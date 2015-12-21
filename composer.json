@@ -1,5 +1,5 @@
 {
-    "name": "igorw/retry",
+    "name": "codelegance/retry",
     "description": "A tiny library for retrying failing operations.",
     "keywords": ["failure"],
     "license": "MIT",
