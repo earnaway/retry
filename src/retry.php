@@ -1,19 +1,34 @@
-<?php
+<?php namespace earnaway;
 
-namespace igorw;
+use Exception;
 
-class FailingTooHardException extends \Exception {}
+class FailingTooHardException extends Exception {}
 
+/**
+ * @param $retries
+ * @param callable $fn
+ * @return mixed
+ * @throws Exception
+ * @throws FailingTooHardException
+ */
 function retry($retries, callable $fn)
 {
+    // keep the intial number of retries
+    $attempts = $retries;
+
     beginning:
     try {
         return $fn();
-    } catch (\Exception $e) {
-        if (!$retries) {
-            throw new FailingTooHardException('', 0, $e);
+    } catch (Exception $e) {
+        // operation has timed out
+        if (strpos($e->getMessage(), 'Operation timed out') !== false) {
+            if (!$retries) {
+                throw new FailingTooHardException(sprintf('Failed after %d retries', $attempts), 0, $e);
+            }
+            $retries--;
+            goto beginning;
+        } else {
+            throw $e;
         }
-        $retries--;
-        goto beginning;
     }
 }
