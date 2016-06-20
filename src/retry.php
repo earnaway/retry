@@ -1,4 +1,4 @@
-<?php namespace earnaway;
+<?php namespace EarnAway;
 
 use Exception;
 
@@ -21,7 +21,7 @@ function retry($retries, callable $fn)
         return $fn();
     } catch (Exception $e) {
         // operation has timed out
-        if (strpos($e->getMessage(), 'Operation timed out') !== false) {
+        if (strpos($e->getMessage(), 'timed out') !== false) {
             if (!$retries) {
                 throw new FailingTooHardException(sprintf('Failed after %d retries', $attempts), 0, $e);
             }
