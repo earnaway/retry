@@ -2,14 +2,14 @@
 
 use Exception;
 
-class FailingTooHardException extends Exception {}
+class TooManyTimeoutsException extends Exception {}
 
 /**
  * @param $retries
  * @param callable $fn
  * @return mixed
  * @throws Exception
- * @throws FailingTooHardException
+ * @throws TooManyTimeoutsException
  */
 function retry($retries, callable $fn)
 {
@@ -23,9 +23,10 @@ function retry($retries, callable $fn)
         // operation has timed out
         if (strpos($e->getMessage(), 'timed out') !== false) {
             if (!$retries) {
-                throw new FailingTooHardException(sprintf('Failed after %d retries', $attempts), 0, $e);
+                throw new TooManyTimeoutsException(sprintf('Failed after %d timeouts', $attempts), 0, $e);
             }
             $retries--;
+            unset($e);
             goto beginning;
         } else {
             throw $e;
